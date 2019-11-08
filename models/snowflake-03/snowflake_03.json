@@ -1,0 +1,22 @@
+{
+    "parameterSets": {
+        "snow3.1": {
+            "$fn": "24",
+            "branch_count": "6",
+            "central_branch_start_coef": "0.372",
+            "hanger_type": "ring",
+            "height": "3",
+            "main_thickness_coef": "0.125",
+            "middle_branch_length_coef": "0.3",
+            "middle_branch_start_coef": "0.485",
+            "outer_branch_length_coef": "0.2",
+            "outer_branch_start_coef": "0.8",
+            "radius": "40",
+            "ring_inner_radius_coef": "0.065",
+            "ring_thick_coef": "0.08",
+            "small_thickness_coef": "0.1"
+        }
+    },
+    "parameterSets": "",
+    "fileFormatVersion": "1"
+}

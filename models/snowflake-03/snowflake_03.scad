@@ -2,8 +2,6 @@
 // @author Ilya Protasov
 
 /* TODO
-- length sub branches
-- refactoring coefficients
 ? fix central figure for branch_count
 */
 
@@ -13,11 +11,18 @@ radius = 40;
 hanger_type = "ring";// [ring, none]
 
 /* [Extended] */
-// coefficient of radius for main branch thickness
-main_thickness_coef = 0.125; // [0:0.001:0.300]
-small_thickness_coef = 0.100; // [0:0.001:0.300]
+// coefficient of radius for central (main) branch thickness
+central_thickness_coef = 0.125; // [0:0.001:0.300]
+central_branch_start_coef = 0.25; // [0:0.001:1]
+
 middle_branch_start_coef = 0.5; // [0:0.001:1]
+middle_branch_length_coef = 0.3; // [0:0.001:1]
+middle_thickness_coef = 0.100; // [0:0.001:0.300]
+
 outer_branch_start_coef = 0.8; // [0:0.001:1]
+outer_branch_length_coef = 0.2; // [0:0.001:1]
+outer_thickness_coef = 0.100; // [0:0.001:0.300]
+
 ring_inner_radius_coef = 0.065; // [0:0.001:0.300]
 ring_thick_coef = 0.080; // [0:0.001:0.300]
 
@@ -28,28 +33,29 @@ $fn = 24;
 /* [Hidden]  */
 branch_count = 6;
 
-thickMain = radius * main_thickness_coef;
-thickC = radius * small_thickness_coef;
+thickMain = radius * central_thickness_coef;
+middleThick = radius * middle_thickness_coef;
+outerThick = radius * outer_thickness_coef;
 
 module branchMain() {
     centralAngle = 120;//360 / branch_count * 2;
-    lenSub = radius*0.25;
+    lenHex = radius * central_branch_start_coef;
     middleStart = radius * middle_branch_start_coef;
     outerStart = radius * outer_branch_start_coef;
     
     //central hexagon
-    translate([0, lenSub, 0]) rotate([0, 0, centralAngle]) branch2(thickMain, lenSub);
+    translate([0, lenHex, 0]) rotate([0, 0, centralAngle]) branch2(thickMain, lenHex);
     
     //central branch
-    translate([0, lenSub, 0]) branch2(thickMain, radius-lenSub);
+    translate([0, lenHex, 0]) branch2(thickMain, radius-lenHex);
     
     //middle branchs
-    translate([0, middleStart, 0]) rotate([0, 0, 60]) branch2(thickC, lenSub*1.2);
-    translate([0, middleStart, 0]) rotate([0, 0, -60]) branch2(thickC, lenSub*1.2);
+    translate([0, middleStart, 0]) rotate([0, 0, 60]) branch2(middleThick, radius * middle_branch_length_coef);
+    translate([0, middleStart, 0]) rotate([0, 0, -60]) branch2(middleThick, radius * middle_branch_length_coef);
     
     //outer branchs
-    translate([0, outerStart, 0]) rotate([0, 0, 60]) branch2(thickC, lenSub*.8);
-    translate([0, outerStart, 0]) rotate([0, 0, -60]) branch2(thickC, lenSub*.8);
+    translate([0, outerStart, 0]) rotate([0, 0, 60]) branch2(outerThick, radius * outer_branch_length_coef);
+    translate([0, outerStart, 0]) rotate([0, 0, -60]) branch2(outerThick, radius * outer_branch_length_coef);
 }
 
 module branch2(thick, length) {
