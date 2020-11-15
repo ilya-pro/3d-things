@@ -1,0 +1,16 @@
+{
+    "parameterSets": {
+        "steple gun holder": {
+            "$fn": "24",
+            "gap_align": "center",
+            "gap_start": "10",
+            "gap_width": "30",
+            "link_count": "1",
+            "link_height": "10",
+            "link_length": "55",
+            "link_thick": "4",
+            "link_width": "30"
+        }
+    },
+    "fileFormatVersion": "1"
+}
