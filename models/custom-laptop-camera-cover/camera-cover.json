@@ -1,0 +1,20 @@
+{
+    "parameterSets": {
+        "Prestige Modern 8RD": {
+            "$fn": "72",
+            "inner_depth": "5",
+            "inner_height": "8",
+            "thick": "1.2",
+            "width": "10"
+        },
+        "Dell Latitude E7450": {
+            "$fn": "72",
+            "inner_depth": "7",
+            "inner_height": "21",
+            "thick": "1.2",
+            "width": "12"
+        }
+    },
+    "parameterSets": "",
+    "fileFormatVersion": "1"
+}
