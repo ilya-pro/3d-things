@@ -14,7 +14,7 @@ show text error for sizes
 offset_A = "out";// [in, center, out]
 // height of part A
 height_A = 10.00;// [0.2:0.01:100]
-// diameter at center of height the part A
+// (dA) diameter at center of height the part A
 diameter_A = 22.02; // [0.2:0.01:100]
 // wall thickness
 thick_A = 3.00;// [0.1:0.01:50]
@@ -24,6 +24,7 @@ angle_A = 5;// [-90:0.1:90]
 
 offset_B = "out";// [in, center, out]
 height_B = 31; // [0.2:0.01:100]
+// (dB)
 diameter_B = 40; // [0.2:0.01:100]
 
 thick_B = 4; // [0.1:0.01:50]
@@ -40,9 +41,9 @@ $fn = 72;
 /* [Debug] */
 cutaway = false;
 cut_angle = 180; // [1:1:359]
+show_measures = false;
 // TODO fix
 show_diameters = false;
-//TODO show_sizes = false;
 
 function pipePoints(thick, angle, radius, height, offset) =
     // check let in Thingerverse
@@ -76,6 +77,39 @@ module rotatedPoints(points) {
     rotateAngle = cutaway ? cut_angle : 360;
     rotate_extrude(angle = rotateAngle)
         polygon( points );
+}
+
+module measure(length, thick = 1, prefix="", postfix="") {
+    coneH = 7*thick;
+    // TODO needs parameter maybe, 40 just for test
+    isSmall = coneH * 40 > length;
+    coneA = isSmall ? 90 : -90;
+    coneDelta = isSmall ? 0 : coneH;
+    lengthUnderText = coneH*2;
+    color("red") {
+        //line
+        rotate([45,0,0])
+            cube([length - coneDelta*2, thick, thick], center=true);
+        //left cone
+        translate([-length/2, 0])
+        rotate([0,coneA,0])
+        translate([0,0,-coneH])
+            cylinder(h=coneH, r1=3*thick, r2=0, center=false, $fn=4);
+        //rigth cone
+        translate([length/2, 0])
+        rotate([0, -coneA, 0])
+        translate([0, 0, -coneH])
+            cylinder(h=coneH, r1=3*thick, r2=0, center=false, $fn=4);
+        //line under text
+        translate([length/2 + lengthUnderText/2 + coneH - coneDelta, 0, 0])
+        rotate([45,0,0])
+            cube([lengthUnderText, thick, thick], center=true);
+        //text
+        translate([length/2 + coneH - coneDelta + thick, thick/2, thick*2])
+        rotate([90, 0, 0])
+        linear_extrude(thick)
+            text(str(prefix, length), size = thick*6, valign="bottom");
+    }
 }
 
 module adapter(i) {
@@ -122,7 +156,7 @@ module adapter(i) {
             [pipePointsA[1][0], heightM],
             [pipePointsA[0][0], heightM]];
     translate([0,0, -heightM])
-    color("forestgreen")
+    color("cyan")
         // TODO get params
         //middle(topInX=7, topOutX=10, bottomInX=14, bottomOutX=20, height=heightM);
         rotatedPoints(points = pipePointsMiddle);
@@ -131,6 +165,15 @@ module adapter(i) {
     // B side here because heightM needs to be calulated
     translate([0,0, -heightM-height_B])
         rotatedPoints(points = pipePointsB);
+
+    if (show_measures) {
+        // A part
+        translate([0,0,height_A/2])
+            measure(length=diameter_A, thick=1, prefix="dA: ");
+        // B part
+        translate([0,0,-heightM-height_B/2])
+            measure(length=diameter_B, thick=1, prefix="dB: ");
+    }
 }
 
 adapter();
