@@ -4,12 +4,12 @@
 /*
 TODO
 Measurements visual
-minimal middle thick
+minimal middle thick, based on the minimal thick A or B
 show text error for sizes
 ? rim
 */
 
-/* [Simple] */
+/* [Base] */
 // if unchecked sizes will be for inner diameter
 offset_A = "out";// [in, center, out]
 // height of part A
@@ -31,7 +31,7 @@ thick_B = 4; // [0.1:0.01:50]
 angle_B = 10;// [-90:0.1:90]
 
 // angle for inner surface that joins A and B parts
-innerAngleM = 45;// [-90:0.1:89]
+innerAngleM = 10;// [0:0.1:89]
 /* [Advanced] */
 
 /* [Quality] */
@@ -46,7 +46,7 @@ show_measures = false;
 show_diameters = false;
 
 function pipePoints(thick, angle, radius, height, offset) =
-    // check let in Thingerverse
+    // TODO check let in Thingerverse
     let (
         thickProj = thick / cos(angle),
         // get offset for x axis
@@ -61,17 +61,6 @@ function pipePoints(thick, angle, radius, height, offset) =
     [radius + xAOffset + thickProj - xATopOffset, height],
     [radius + xAOffset - xATopOffset, height]
     ];
-
-module middle(topInX, topOutX, bottomInX, bottomOutX, height) {
-    rotateAngle = cutaway ? cut_angle : 360;
-    rotate_extrude(angle = rotateAngle)
-        polygon( points=[
-            // anticlockwise: bottom
-            [bottomInX, 0], [bottomOutX, 0],
-            // top
-            [topOutX, height],
-            [topInX, height]] );
-}
 
 module rotatedPoints(points) {
     rotateAngle = cutaway ? cut_angle : 360;
@@ -116,7 +105,7 @@ module adapter(i) {
     //4/Math.cos(30*Math.PI/180)
     thickAProj = thick_A / cos(angle_A);
     //echo(thickAProj);
-    thickH = thick_A * sin(angle_A);
+    //thickH = thick_A * sin(angle_A);
     //echo(thickH);
     // get offset for x axis
     xAOffset = offset_A == "in" ? 0 :
@@ -147,13 +136,24 @@ module adapter(i) {
     // TODO minimal middle thick
     innerDeltaXAB = pipePointsB[3][0] - pipePointsA[0][0];
     //heightM = innerDeltaXAB / cos(innerAngleM);
+    minThickM = min(thick_A, thick_B);
+    //    minThickDeltaY = 0;//minThickM * tan(innerAngleM);//thick_A / cos(angle_A);
+    //minThickDeltaX = tan(innerAngleM) / minThickM ;
+    minThickDeltaX = cos(90-innerAngleM) * minThickM ;
+    minThickDeltaY = minThickM * sin(90-innerAngleM);
+    echo("min=", minThickM);
+
     heightM = abs(innerDeltaXAB) * tan(innerAngleM);
     pipePointsMiddle=[
             // anticlockwise: bottom
             [pipePointsB[3][0], 0],
-            [pipePointsB[2][0], 0],
+            //[pipePointsB[2][0], 0],
+            // minThickCorner bottom
+            [pipePointsB[3][0] + minThickDeltaX, 0 + minThickDeltaY],
             // top
-            [pipePointsA[1][0], heightM],
+            //[pipePointsA[1][0], heightM],
+            // minThickCorner top inner
+            [pipePointsA[0][0] + minThickDeltaX, heightM + minThickDeltaY],
             [pipePointsA[0][0], heightM]];
     translate([0,0, -heightM])
     color("cyan")
