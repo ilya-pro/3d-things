@@ -11,12 +11,16 @@ TODO
 
 profile_type = "rect";// [ring, rect]
 profile_angle = 0; // [0:.5:359]
-height = 3;
-innerR = 5;
-outerR = 15;
+height = 3.0; // [0:.5:300]
+// inner diameter
+innerD = 10; // [0:.1:100]
+innerR = innerD/2;
+// outer diameter
+outerD = 30;
+outerR = outerD/2;
 
 // chamfer is 45 degrees only and applies for rect profile for each corner
-chamfer = 1;
+chamfer = 1; // [0:.1:100]
 
 // if use 4 then profile will be square (4 sides)
 profile_ring_segments = 5; // [3:72]
@@ -31,6 +35,11 @@ cut_angle = 180; // [1:1:359]
 /* [Quality] */
 $fn = 72;
 
+/* [Debug] */
+show_belt = false;
+belt_width = 5;
+show_diameters = false;
+
 module ring(height, outerR, innerR) {
     rotateAngle = cutaway ? cut_angle : 360;
     rotate_extrude(angle = rotateAngle) {
@@ -39,6 +48,15 @@ module ring(height, outerR, innerR) {
                 rotate([0, 0, profile_angle])
                     profile(profile_type);
     }
+    // debug
+    if (show_belt)
+        color("yellow", .3)
+        translate([outerR/2, 0,0])
+        rotate([0,0,90])    
+        cube([belt_width, outerR, height*3], true);
+    if (show_diameters)
+        color("yellow", .3)
+            cylinder(h = height, r = innerR);
 }
 
 module profile(type) {

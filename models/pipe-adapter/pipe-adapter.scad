@@ -3,15 +3,16 @@
 
 /*
 TODO
-Measurements visual
-minimal middle thick, based on the minimal thick A or B
-show text error for sizes
+- chamfer
+- Measurements visual
+- minimal middle thick, based on the minimal thick A or B
+- show text error for sizes
 ? rim
 */
 
 /* [Base] */
 // if unchecked sizes will be for inner diameter
-offset_A = "out";// [in, center, out]
+offset_A = "out";// [in, out]
 // height of part A
 height_A = 10.00;// [0.2:0.01:100]
 // (dA) diameter at center of height the part A
@@ -37,7 +38,6 @@ innerAngleM = 10;// [0:0.1:89]
 /* [Quality] */
 $fn = 72;
 
-
 /* [Debug] */
 cutaway = false;
 cut_angle = 180; // [1:1:359]
@@ -50,13 +50,14 @@ function pipePoints(thick, angle, radius, height, offset) =
     let (
         thickProj = thick / cos(angle),
         // get offset for x axis
-        xAOffset = offset == "in" ? 0 :
-               (offset == "center" ? -thickProj / 2 : - thickProj),
-        xATopOffset = height / 2 * sin(angle)
+        xAOffset = offset == "in" ? 0 : - thickProj,
+        // divide on 2 needs for align to center of height
+        xATopOffset = tan(angle) * height / 2
         )
     [
     // anticlockwise: bottom
-    [radius + xAOffset + xATopOffset, 0], [radius + xAOffset + xATopOffset + thickProj, 0],
+    [radius + xAOffset + xATopOffset, 0], 
+    [radius + xAOffset + xATopOffset + thickProj, 0],
     // top
     [radius + xAOffset + thickProj - xATopOffset, height],
     [radius + xAOffset - xATopOffset, height]
@@ -120,9 +121,14 @@ module adapter(i) {
         offset = offset_A,
         angle=angle_A);
     rotatedPoints(points = pipePointsA);
-    if (show_diameters)
+    if (show_diameters) {
         color("yellow", .3)
             cylinder(h = height_A, r = diameter_A / 2);
+        color("yellow", .3)
+        // TODO add Z offset for join pipe
+            translate([0,0, -height_B])
+            *cylinder(h = height_B, r = diameter_B / 2);
+    }
 
     // B part only points (needs for Middel part
     pipePointsB = pipePoints(
@@ -162,7 +168,7 @@ module adapter(i) {
         rotatedPoints(points = pipePointsMiddle);
         //rotatedPoints(points = pipePointsA);
 
-    // B side here because heightM needs to be calulated
+    // B part here because heightM needs to be calulated
     translate([0,0, -heightM-height_B])
         rotatedPoints(points = pipePointsB);
 

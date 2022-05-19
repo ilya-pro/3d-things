@@ -1,0 +1,50 @@
+{
+    "parameterSets": {
+        "01_ring_for_40mm_belt": {
+            "$fn": "72",
+            "belt_width": "40",
+            "chamfer": "1",
+            "cut_angle": "235",
+            "cutaway": "true",
+            "height": "7",
+            "innerD": "55",
+            "outerD": "65",
+            "profile_angle": "0",
+            "profile_ring_segments": "5",
+            "profile_type": "rect",
+            "show_belt": "true",
+            "show_diameters": "false"
+        },
+        "FBG5_leg_spacer": {
+            "$fn": "72",
+            "belt_width": "5",
+            "chamfer": "0",
+            "cut_angle": "180",
+            "cutaway": "false",
+            "height": "11.5",
+            "innerD": "3.6",
+            "outerD": "21",
+            "profile_angle": "0",
+            "profile_ring_segments": "5",
+            "profile_type": "rect",
+            "show_belt": "false",
+            "show_diameters": "false"
+        },
+        "03_tea_can_combiner": {
+            "$fn": "144",
+            "belt_width": "40",
+            "chamfer": "0.4",
+            "cut_angle": "235",
+            "cutaway": "false",
+            "height": "10",
+            "innerD": "70",
+            "outerD": "75",
+            "profile_angle": "0",
+            "profile_ring_segments": "5",
+            "profile_type": "rect",
+            "show_belt": "false",
+            "show_diameters": "false"
+        }
+    },
+    "fileFormatVersion": "1"
+}

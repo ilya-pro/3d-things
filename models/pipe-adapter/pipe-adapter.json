@@ -1,0 +1,24 @@
+{
+    "parameterSets": {
+        "test1": {
+            "$fn": "72",
+            "angle_A": "11.9",
+            "angle_B": "7.2",
+            "cut_angle": "180",
+            "cutaway": "true",
+            "diameter_A": "30.67",
+            "diameter_B": "60.26",
+            "height_A": "14.99",
+            "height_B": "31",
+            "innerAngleM": "46.1",
+            "offset_A": "out",
+            "offset_B": "out",
+            "show_diameters": "true",
+            "show_measures": "false",
+            "thick_A": "4.41",
+            "thick_B": "7.5"
+        }
+    },
+    "parameterSets": "",
+    "fileFormatVersion": "1"
+}
