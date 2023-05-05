@@ -23,7 +23,7 @@ thick_A = 3.00;// [0.1:0.01:50]
 angle_A = 5;// [-90:0.1:90]
 
 
-offset_B = "out";// [in, center, out]
+offset_B = "out";// [in, out]
 height_B = 31; // [0.2:0.01:100]
 // (dB)
 diameter_B = 40; // [0.2:0.01:100]
@@ -33,6 +33,9 @@ angle_B = 10;// [-90:0.1:90]
 
 // angle for inner surface that joins A and B parts
 innerAngleM = 10;// [0:0.1:89]
+
+// connection method for gap of middle (joiner) parts
+join_type = "line";// [line]
 /* [Advanced] */
 
 /* [Quality] */
@@ -42,7 +45,6 @@ $fn = 72;
 cutaway = false;
 cut_angle = 180; // [1:1:359]
 show_measures = false;
-// TODO fix
 show_diameters = false;
 
 function pipePoints(thick, angle, radius, height, offset) =
@@ -120,15 +122,9 @@ module adapter(i) {
         thick=thick_A,
         offset = offset_A,
         angle=angle_A);
+    
     rotatedPoints(points = pipePointsA);
-    if (show_diameters) {
-        color("yellow", .3)
-            cylinder(h = height_A, r = diameter_A / 2);
-        color("yellow", .3)
-        // TODO add Z offset for join pipe
-            translate([0,0, -height_B])
-            *cylinder(h = height_B, r = diameter_B / 2);
-    }
+    
 
     // B part only points (needs for Middel part
     pipePointsB = pipePoints(
@@ -148,11 +144,14 @@ module adapter(i) {
     minThickDeltaX = cos(90-innerAngleM) * minThickM ;
     minThickDeltaY = minThickM * sin(90-innerAngleM);
     echo("min=", minThickM);
+    // only for Join type "line"
+    joinPoint = [pipePointsB[2][0], 0];
 
     heightM = abs(innerDeltaXAB) * tan(innerAngleM);
     pipePointsMiddle=[
             // anticlockwise: bottom
             [pipePointsB[3][0], 0],
+            joinPoint,
             //[pipePointsB[2][0], 0],
             // minThickCorner bottom
             [pipePointsB[3][0] + minThickDeltaX, 0 + minThickDeltaY],
@@ -171,7 +170,15 @@ module adapter(i) {
     // B part here because heightM needs to be calulated
     translate([0,0, -heightM-height_B])
         rotatedPoints(points = pipePointsB);
-
+    
+    if (show_diameters) {
+        color("yellow", .3)
+            cylinder(h = height_A, r = diameter_A / 2);
+        color("yellow", .3)
+            translate([0,0, -height_B - heightM])
+            cylinder(h = height_B, r = diameter_B / 2);
+    }
+    
     if (show_measures) {
         // A part
         translate([0,0,height_A/2])

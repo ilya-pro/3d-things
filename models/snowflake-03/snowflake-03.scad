@@ -7,7 +7,7 @@
 */
 
 /* [Base] */
-height = 3;
+height = 3.2;
 radius = 40;
 hanger_type = "ring";// [ring, slot ,none]
 // only for slot hanger type
@@ -41,7 +41,7 @@ slot_length_coef = 1.010; // [1.010:0.001:5.000]
 
 /* [Quality ] */
 //count of segments in arcs https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Other_Language_Features#$fa,_$fs_and_$fn
-$fn = 24; 
+$fn = 24;
 
 /* [Hidden]  */
 branch_count = 6;
@@ -55,17 +55,17 @@ module branchMain() {
     lenHex = radius * central_branch_start_coef;
     middleStart = radius * middle_branch_start_coef;
     outerStart = radius * outer_branch_start_coef;
-    
+
     //central hexagon
     translate([0, lenHex, 0]) rotate([0, 0, centralAngle]) branch2(thickMain, lenHex);
-    
+
     //central branch
     translate([0, lenHex, 0]) branch2(thickMain, radius-lenHex);
-    
+
     //middle branchs
     translate([0, middleStart, 0]) rotate([0, 0, 60]) branch2(middleThick, radius * middle_branch_length_coef);
     translate([0, middleStart, 0]) rotate([0, 0, -60]) branch2(middleThick, radius * middle_branch_length_coef);
-    
+
     //outer branchs
     translate([0, outerStart, 0]) rotate([0, 0, 60]) branch2(outerThick, radius * outer_branch_length_coef);
     translate([0, outerStart, 0]) rotate([0, 0, -60]) branch2(outerThick, radius * outer_branch_length_coef);
@@ -86,17 +86,17 @@ module ring(height, outerR, innerR) {
 module slot(length, thick, height, rounded = true) {
     if (rounded) {
         rotate([0, 90, 0]) {
-            translate([0, thick/2 - height/2, 0]) 
+            translate([0, thick/2 - height/2, 0])
                 cylinder(length, height/2, height/2, true);
-            translate([0, -thick/2 + height/2, 0]) 
+            translate([0, -thick/2 + height/2, 0])
                 cylinder(length, height/2, height/2, true);
         }
     }
-    
+
     cube([length,
-          thick - height * (rounded ? 1 : 0), 
+          thick - height * (rounded ? 1 : 0),
           height], true);
-        
+
 }
 
 module snowflake3(branchCount) {
@@ -108,23 +108,28 @@ module snowflake3(branchCount) {
             for (i=[0:branchCount-1]) {
                 rotate([0, 0, i * angle]) branchMain();
             }
-        }        
+        }
         if (hanger_type == "slot") {
             translate([0, radius * slot_start_coef, height/2])
                 slot(radius * central_thickness_coef * slot_length_coef,
-                    radius * slot_thick_coef, 
+                    radius * slot_thick_coef,
                     height * slot_height_coef,
                     rounded = slot_rounded);
             }
+        // hole for spinner
+        //translate([0, 0, height/2])
+            //for d 3.88 r=2.1
+            //cylinder(h=height*2, r=2, center=true);
     }
     if (hanger_type == "ring") {
         translate([0, radius + ringInnerRadius + ringThick, height/2])
-            ring(height = height, 
+            ring(height = height,
                  outerR = ringInnerRadius + ringThick,
                  innerR = ringInnerRadius );
     }
-    
-        
+
+
 }
 
+//projection()
 color("DeepSkyBlue") snowflake3(branch_count);
